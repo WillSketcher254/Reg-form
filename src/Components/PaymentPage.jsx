@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 function PaymentPage() {
     const location = useLocation();
-    const selectedPrice = location.state?.price || 'No price selected'; // Fallback if no price is passed
+    const selectedPrice = location.state?.price || 'No price selected';
 
-    const alertMessage = () => {
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
+
+    const validateEmail = (email) => {
+        // Simple email regex for validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+    };
+
+    const handleSubscribe = () => {
+        if (!validateEmail(email)) {
+            setEmailError('Please enter a valid email address.');
+            return;
+        }
+
+        setEmailError('');  // Clear the error if email is valid
         alert(`Email will be sent.\nThank you for subscribing with the selected plan: ${selectedPrice}`);
     };
 
@@ -23,7 +38,16 @@ function PaymentPage() {
                 <ul>
                     <li className='p-2'>Business mail
                         <br />
-                        <input type="email" placeholder='Valid Email' className='block w-full border border-gray-300 rounded-md shadow-sm' />
+                        <input 
+                            type="email" 
+                            placeholder='Valid Email' 
+                            className='block w-full border border-gray-300 rounded-md shadow-sm' 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        {emailError && (
+                            <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                        )}
                     </li>
                     <li className='p-2'>Card
                         <select className="block w-full border border-gray-300 rounded-md shadow-sm">
@@ -35,11 +59,20 @@ function PaymentPage() {
                     </li>
                     <li className='p-2'>Country
                         <br />
-                        <input type="text" placeholder='Country name' className='block w-full border border-gray-300 rounded-md shadow-sm' />
+                        <input 
+                            type="text" 
+                            placeholder='Country name' 
+                            className='block w-full border border-gray-300 rounded-md shadow-sm' 
+                        />
                     </li>
                     <li>Valid details should be provided to avoid errors on the page.</li>
                 </ul>
-                <button className='m-4' onClick={alertMessage}>Subscribe</button>
+                <button 
+                    className='m-4 bg-slate-900 p-2 px-5 hover:bg-blue-900' 
+                    onClick={handleSubscribe}
+                >
+                    Subscribe
+                </button>
             </div>
         </div>
     );
